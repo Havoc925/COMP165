@@ -1,114 +1,85 @@
-//5.Assignment.1
+//Pointers.Lab.2
 #include <iostream>
 
 using namespace std;
 
-void init(char chart[13][6], string seatClass[13]) {
-    for (int i = 0; i < 13; i++) {
-        for (int j = 0; j < 6; j++) {
-            chart[i][j] = '*';
-        }
+struct student {
+    string  FirstName;
+    string  LastName;
+    int     QuizScores[10];
+    char    LetterGrade;
+};
+
+char calcLetterGrade(student students[], int i) {
+    int sum = 0;
+    for(int j = 0; i < 10; i++) {
+        sum += students[i].QuizScores[j];
     }
-    for (int i = 0; i < 13; i++) {
-        if (i <= 2) {
-            seatClass[i] = "First Class";
-        } else if (i < 7) {
-            seatClass[i] = "Business Class";
-        } else if (i < 11) {
-            seatClass[i] = "Economy Class";
-        }
-    }
-}
-void showChart(char chart[13][6]) {
-    cout << "        A  B  C  D  E  F" << endl;
-    for (int i = 0; i < 13; i++) {
-        cout << "Row " << i + 1 << "  ";
-        if (i < 9) cout << " ";
-        for (int j = 0; j < 6; j++) {
-            cout << chart[i][j] << "  ";
-        }
-        cout << endl;
-    }
-}
-char menu() {
-    char choice;
-    cout << "Reserve a seat (Yes (Y/y) or No (N/n))" << endl;
-    cout << "Assign ticket type (first class (F/f), business class (B/b), or economy class (E/e))" << endl;
-    cout << "Select desired seat (1-13 and A-F)" << endl;
-    cin >> choice;
-    return (char)tolower(choice);
-}
-void reserve(char chart[13][6]) {
-    int row;
-    char col;
-    cout << "Enter the row number: ";
-    cin >> row;
-    cout << "Enter the column letter: ";
-    cin >> col;
-    if (chart[row - 1][col - 65] == '*') {
-        chart[row - 1][col - 65] = 'X';
-        cout << "Seat reserved." << endl;
+    int avg = sum / 10;
+    if(avg >= 90) {
+        return 'A';
+    } else if(avg >= 80) {
+        return 'B';
+    } else if(avg >= 70) {
+        return 'C';
+    } else if(avg >= 60) {
+        return 'D';
     } else {
-        cout << "Seat already reserved." << endl;
+        return 'F';
     }
 }
-void findSeat(char chart[13][6], string seatClass[13], char choice) {
-    if(choice == 'f') {
-        for(int i = 0; i < 2; i++) {
-            for(int j = 0; j < 6; j++) {
-                if(chart[i][j] == '*') {
-                    chart[i][j] = 'X';
-                    cout << "Seat reserved." << endl;
-                    cout << "Seat: " << "Row " << i+1 << " " << (char)(j + 65) << endl;
-                    cout << "Class: " << seatClass[i] << endl;
-                    return;
-                }
+
+void get_student_info(int numStudents, student students[]) {
+    for(int i = 0; i < numStudents; i++) {
+        cout << "Enter students first name: ";
+        cin >> students[i].FirstName;
+        cout << "Enter students last name: ";
+        cin >> students[i].LastName;
+
+        for(int j = 0; j < 10; j++) {
+            cout << "Enter quiz grade " << j + 1 << ": ";
+            cin >> students[i].QuizScores[j];
+        }
+    }
+}
+
+void stuSort(int numStudents, student students[]) {
+    for(int i = 0; i < numStudents; i++) {
+        for(int j = 0; j < numStudents - 1; j++) {
+            if(students[j].LetterGrade > students[j + 1].LetterGrade) {
+                student temp = students[j];
+                students[j] = students[j + 1];
+                students[j + 1] = temp;
             }
         }
-    } else if(choice == 'b') {
-        for (int i = 2; i < 7; i++) {
-            for (int j = 0; j < 6; j++) {
-                if (chart[i][j] == '*') {
-                    chart[i][j] = 'X';
-                    cout << "Seat reserved." << endl;
-                    cout << "Seat: " << "Row " << i+1 << " " << (char) (j + 65) << endl;
-                    cout << "Class: " << seatClass[i] << endl;
-                    return;
-                }
-            }
-        }
-    } else if(choice == 'e') {
-        for (int i = 7; i < 12; i++) {
-            for (int j = 0; j < 6; j++) {
-                if (chart[i][j] == '*') {
-                    chart[i][j] = 'X';
-                    cout << "Seat reserved." << endl;
-                    cout << "Seat: " << "Row " << i+1 << " " << (char) (j + 65) << endl;
-                    cout << "Class: " << seatClass[i] << endl;
-                    return;
-                }
-            }
-        }
+    }
+}
+
+void print_scores(const student s) {
+    cout << s.QuizScores[0];
+    for(int i = 1; i < 10; i++) {
+        cout << ", " << s.QuizScores[i];
+    }
+}
+
+void print_student_info(int numStudents, student students[]) {
+    stuSort(numStudents, students);
+    for(int i = 0; i < numStudents; i++) {
+        cout << "Student name: " << students[i].FirstName << " " << students[i].LastName << endl;
+        cout << "   Quiz Scores:  ";
+        print_scores(students[i]);
+        cout << endl << "   Letter Grade: " << calcLetterGrade(students, i) << endl;
     }
 }
 
 int main() {
-    char chart[13][6];
-    string seatClass[13];
-    init(chart,  seatClass);
+    int numStudents = 0;
 
-    while(1) {
-        showChart(chart);
-        char choice = menu();
-        if (choice == 'y') {
-            reserve(chart);
-        } else if (choice == 'n') {
-            break;
-        } else if (choice == 'f' || choice == 'b' || choice == 'e') {
-            findSeat(chart, seatClass, choice);
-        } else {
-            cout << "Invalid input" << endl;
-        }
-    }
+    cout << "Enter Number of Students: ";
+    cin >> numStudents;
+    student studentArr[numStudents];
+
+    get_student_info(numStudents, studentArr );
+    print_student_info(numStudents, studentArr );
     return 0;
 }
